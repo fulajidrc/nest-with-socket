@@ -4,9 +4,13 @@ import { AppService } from './app.service';
 import { EventGateway } from './events.gateway';
 import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
-
+import { ConfigModule } from '@nestjs/config';
+import {DATABASE} from '../env'
 @Module({
-  imports: [UsersModule, MongooseModule.forRoot('mongodb://localhost/socketDemo')],
+  imports: [
+    ConfigModule.forRoot(),
+    UsersModule, MongooseModule.forRoot(DATABASE)
+  ],
   controllers: [AppController],
   providers: [EventGateway, AppService],
 })

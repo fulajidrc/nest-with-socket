@@ -7,7 +7,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
-import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
+import { JWT_KEY } from 'env';
 
 @Injectable()
 export class UsersService {
@@ -23,9 +24,9 @@ export class UsersService {
         return false;
       const payload = { email: user.email, _id: user._id, name: user.name };
 
-      const token = jwt.sign(payload, '123456');
-      // const accessToken = await this.jwtService.signAsync(payload)
-      return {...user, accessToken: token}
+      const token = jwt.sign(payload, JWT_KEY);
+      
+      return {user: user, accessToken: token}
     }else{
       return false;
     }
