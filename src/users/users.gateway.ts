@@ -30,9 +30,9 @@ export class UsersGateway {
         secure: false,
         maxAge: 30 * 12 * 3600 // cookie expires in 1 hour
       };
-      const cookieValue = cookie.serialize('myToken', token, cookieOptions);
+      const cookieValue = cookie.serialize('myToken2', token, cookieOptions);
       console.log('cookieValue',cookieValue);
-      socket.emit('cookie', cookieValue);
+      socket.emit('cookie', token);
       // Wait for the 'cookieReceived' event to be emitted by the client
       await new Promise<void>((resolve) => {
         socket.on('cookieReceived', () => {
@@ -40,7 +40,6 @@ export class UsersGateway {
           resolve();
         });
       });
-
       socket.emit('message', {
         type: 'SUCCESS_LOGIN',
         data: user
@@ -52,11 +51,10 @@ export class UsersGateway {
   @SubscribeMessage('verifyCookie')
   async verifyCookie(@ConnectedSocket() socket: Socket,@MessageBody() loginUserDto: any, ){
     console.log('loginUserDto', loginUserDto);
-
-    const cookieValue = socket.handshake.headers.cookie;
-    const cookieOptions = {}; // add any cookie options as needed
-    const cookies = cookie.parse(cookieValue, cookieOptions);
-    const token = cookies.myToken; // replace 'myToken' with your cookie key
+    // const cookieValue = socket.handshake.headers.cookie;
+    // const cookieOptions = {}; // add any cookie options as needed
+    // const cookies = cookie.parse(cookieValue, cookieOptions);
+    // const token = cookies.myToken; // replace 'myToken' with your cookie key
   }
 
   @SubscribeMessage('createUser')

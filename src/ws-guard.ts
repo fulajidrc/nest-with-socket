@@ -1,6 +1,9 @@
 import { CanActivate, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
+// import * as jwt from 'jsonwebtoken';
+
 import * as jwt from 'jsonwebtoken';
+
 import { JWT_KEY } from 'env';
 import * as cookie from 'cookie';
 @Injectable()
@@ -15,24 +18,20 @@ export class WsGuard implements CanActivate {
         const cookies = cookie.parse(cookieValue, cookieOptions);
         const bearerToken = cookies.myToken; 
         try {
-            const decoded = jwt.verify(bearerToken, JWT_KEY) as any;
-            console.log(decoded);
+            const decoded = jwt.verify(bearerToken, JWT_KEY);
             if(decoded){
                 const message = context.switchToWs().getData();
-                const metadata = context.getArgByIndex(2);
-                metadata.messageBody = {
-                    ...metadata.messageBody,
-                    user:decoded,
-                  };
-              
-                // const request = context.switchToHttp().getRequest();
-                // request.body = { ...request.body, user: decoded };
+                message.user = decoded;
                 return true;
             }else{
                 return false;
             }
         } catch (ex) {
             console.log(ex);
+
+            context.args[0].emit('message', {
+                type: 'LOGOUT',
+            });
             return false;
         }
     }
